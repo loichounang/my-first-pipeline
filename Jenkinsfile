@@ -24,12 +24,24 @@ pipeline {
             }
         }
         
-        stage('SonarQube Analysis') {
-            steps {
-                echo 'Analyse SonarQube...'
-                echo 'On va configurer ça ensemble après'
+      stage('SonarQube Analysis') {
+    steps {
+        echo 'Analyse SonarQube...'
+        script {
+            def scannerHome = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+            withSonarQubeEnv('SonarQube') {
+                bat """
+                    ${scannerHome}\\bin\\sonar-scanner.bat ^
+                    -Dsonar.projectKey=my-first-pipeline ^
+                    -Dsonar.sources=app ^
+                    -Dsonar.tests=tests ^
+                    -Dsonar.python.coverage.reportPaths=coverage.xml ^
+                    -Dsonar.host.url=http://localhost:9000
+                """
             }
         }
+    }
+}
         
         stage('Build Docker Image') {
             steps {
