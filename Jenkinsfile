@@ -38,20 +38,14 @@ pipeline {
             }
         }
         
-     stage('Deploy') {
-    steps {
-        echo 'Déploiement...'
-        script {
-            // Arrête le conteneur (ignore l'erreur s'il n'existe pas)
-            bat 'docker stop my-python-app || exit 0'
-            // Supprime le conteneur (ignore l'erreur s'il n'existe pas)
-            bat 'docker rm my-python-app || exit 0'
-            // Lance le nouveau conteneur
-            bat 'docker run -d --name my-python-app -p 5000:5000 my-python-app:latest'
+        stage('Deploy') {
+            steps {
+                echo 'Déploiement...'
+                bat 'docker stop my-python-app || exit 0'
+                bat 'docker rm my-python-app || exit 0'
+                bat 'docker run -d --name my-python-app -p 5000:5000 my-python-app:latest'
+            }
         }
-    }
-}
-}
     }
     
     post {
