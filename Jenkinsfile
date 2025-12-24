@@ -38,14 +38,22 @@ pipeline {
             }
         }
         
-        stage('Deploy') {
-            steps {
-                echo 'Déploiement...'
-                bat 'docker stop my-python-app || echo "Container not running"'
-                bat 'docker rm my-python-app || echo "Container not found"'
-                bat 'docker run -d --name my-python-app -p 5000:5000 my-python-app:latest'
-            }
+      stage('Deploy') {
+    steps {
+        echo 'Déploiement...'
+        script {
+            // Arrête et supprime le conteneur s'il existe
+            bat '''
+                docker ps -a -q -f name=my-python-app > nul 2>&1 && (
+                    docker stop my-python-app
+                    docker rm my-python-app
+                ) || echo "Aucun conteneur existant"
+            '''
+            // Lance le nouveau conteneur
+            bat 'docker run -d --name my-python-app -p 5000:5000 my-python-app:latest'
         }
+    }
+}
     }
     
     post {
